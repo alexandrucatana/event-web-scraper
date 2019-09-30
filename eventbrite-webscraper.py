@@ -10,7 +10,7 @@ from multiprocessing import Lock as Mutex
 
 path_curr = os.getcwd()
 url = 'https://www.eventbrite.com/d/netherlands/all-events/'
-max_pages = 2
+max_pages = 10
 page = 1
 trash_price_str = ['$', 'R', 'US']
 # for each page
@@ -23,22 +23,24 @@ pool = ThreadPool(thread_no)
 def main(url, max_pages):
     for page in range(max_pages):
         main_page(page)
-    linkFile.close()   
+    for link in weblist:
+        linkFile.write(link + "\n")
+    linkFile.close()
 
 def main_page(page):
     print(page)
     # create weblinks, eventlists as LIST
     # weblinks = 
     getEventLinks(url, page)
-    linkFile.write(str(page) + "\n")
+    #linkFile.write(str(page) + "\n")
     
     
 def parseHref(link):
-	#mutex.acquire()
+	mutex.acquire()
 	aclass = link.findAll('a')
 	href = aclass[0].get('href')
 	weblist.add(href)
-	#mutex.release()
+	mutex.release()
     		
 def getEventLinks(url, page):
     
@@ -50,8 +52,11 @@ def getEventLinks(url, page):
     soup = BeautifulSoup(plain_text, "lxml")
      
     urlContainer = soup.findAll('div', {'class': "eds-media-card-content__content__principal"})   
-    
-    
+
+    '''
+    for link in urlContainer:
+        parseHref(link)
+    '''
     pool.map(parseHref, urlContainer)
     
     
@@ -66,9 +71,8 @@ def getEventLinks(url, page):
     '''   
 
 if __name__ == "__main__":
-	start_time = time.time()
-	main(url, max_pages)
-	pool.join() 
-	for link in weblist:
-		linkFile.write(link + "\n")
-	print("--- %s seconds ---" % (time.time() - start_time))
+    start_time = time.time()
+    main(url, max_pages)
+    #pool.join()
+
+    print("--- %s seconds ---" % (time.time() - start_time))

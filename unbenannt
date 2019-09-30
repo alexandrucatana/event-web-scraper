@@ -1,0 +1,13 @@
+Frontend: 
+
+1. Give me events in:
+
+	a. City
+	b. From Price
+	
+	
+
+2. Backend Rest Server:
+
+	a. calls Python script to get a list of events and their prices.
+	b. sends back a JSON file with [{EventName: "", Price: ""}, {EventName: "", Price: ""}] 
